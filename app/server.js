@@ -14,8 +14,8 @@ const port = process.env.PORT || 9000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/get-token', isSlackResponse, getTokenRoute);
 app.get('/activate', activateRoute);
+app.get('/get-token', isSlackResponse, getTokenRoute);
 app.post('/delete-files', isAuthenticated, deleteFilesRoute);
 
 app.listen(port);
