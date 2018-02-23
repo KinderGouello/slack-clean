@@ -8,16 +8,16 @@ const state = process.env.STATE || '';
 
 const WebClient = require('@slack/client').WebClient;
 const moment = require('moment');
+
+const isAuthenticated = require('./middlewares/isAuthenticated.middleware');
+const db = require('./db');
+const api = require('./api');
 const redis = require('redis');
 const redisClient = redis.createClient({
   'port': process.env.REDIS_PORT || '',
   'host': process.env.REDIS_HOST || '',
   'password': process.env.REDIS_PASSWORD || '',
 });
-
-const db = require('./db');
-const api = require('./api');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -54,57 +54,34 @@ app.get('/getToken', function (req, res) {
   });
 });
 
-app.get('/activate', (req, res) => {
-  res.redirect(`https://slack.com/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}&state=${state}`);
-});
+app.get('/activate', (req, res) =>
+  res.redirect(`https://slack.com/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}&state=${state}`)
+);
 
-app.post('/delete-files', async (req, res) => {
-  console.log('user_id from request :', req.body.user_id);
-
-  user = await db.get(req.body.user_id);
-
-  if (!user) {
-    res.send('Tu n’as pas activé le cleaner, click là : https://slackstatslv.herokuapp.com/activate');
-  }
-
+app.post('/delete-files', isAuthenticated, async (req, res) => {
   console.log('List files');
   const client = api.createClient(JSON.parse(user).token);
   const { files } = await client.getFiles();
 
   if (files.length) {
-    res.send('No file to delete');
+    return res.send('No file to delete');
   }
 
-  const promises = filesResponse.files.map(file => 
-    new Promise(resolve => {
-      web.users.profile.get({ user: file.user }, (err, userProfile) => {
-        console.log(err);
-        console.log(userProfile);
+  const promises = files.map(async (file) => {
+    const { profile } = await client.getProfile();
+    const fileResponse = await client.deleteFile(file.id);
 
-        if (err) throw reject(err);
+    if (filesResponse.ok) {
+      return `Fichier "${file.title}", déposé par ${userProfile.profile.real_name}, a été supprimé.`;
+    } else {
+      return `Le fichier "${file.title}", déposé par ${userProfile.profile.real_name}, n’a pas pu être supprimé.`;
+    }
+  });
 
-        web.files.delete(file.id, (err, fileResponse) => {
-          console.log(err);
-          console.log(fileResponse);
-
-          if (err) throw reject(err);
-
-          if (filesResponse.ok) {
-            resolve(`Fichier "${file.title}", déposé par ${userProfile.profile.real_name}, a été supprimé.`);
-          } else {
-            resolve(`Le fichier "${file.title}", déposé par ${userProfile.profile.real_name}, n’a pas pu être supprimé.`);
-          }
-        });
-      });
-    })
-  );
-
-  Promise.all(promises)
-    .then(responses => {
-      res.send(responses.reduce((accumulator, line) =>
-        accumulator + `${line}\n`
-      , ''));
-    });
+  Promise
+    .all(promises)
+    .then(responses => res.send(responses.reduce((lines, line) => `${lines}${line}\n`, '')))
+    .catch(err => { throw new Error(err); })
 });
 
 app.listen(port);

@@ -19,9 +19,21 @@ const createClient = token => {
     getProfile: () => {
       new Promise((resolve, reject) => client.users.profile.get(
         { user: file.user }, (err, userProfile) => {
+          if (err) reject(err);
 
-        }));
-    }
+          resolve(userProfile);
+        })
+      );
+    },
+    deleteFile: (id) => {
+      new Promise((resolve, reject) => client.files.delete(
+        file.id, (err, fileResponse) => {
+          if (err) reject(err);
+
+          resolve(fileResponse);
+        })
+      );
+    },
   }
 }
 
