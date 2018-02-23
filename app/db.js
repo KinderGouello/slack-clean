@@ -1,0 +1,30 @@
+require('dotenv').config();
+const redis = require('redis');
+
+const redisClient = redis.createClient({
+  'port': process.env.REDIS_PORT || '',
+  'host': process.env.REDIS_HOST || '',
+  'password': process.env.REDIS_PASSWORD || '',
+});
+
+const get = (key) => new Promise((resolve, reject) => {
+  redisClient.get(key, (err, reply) => {
+    if (err) reject(err);
+
+    console.log(`Get key ${key} from Redis result :`, reply);
+    resolve(reply);
+  })
+});
+
+const set = (key, value) => new Promise((resolve, reject) => {
+  redisClient.set((key, value), (err, reply) => {
+    if (err) reject(err);
+
+    resolve(reply);
+  })
+});
+
+module.exports = {
+  get,
+  set,
+};
