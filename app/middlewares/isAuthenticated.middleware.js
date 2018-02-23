@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('../utils/db');
 
 module.exports = async (req, res, next) => {
   console.log('user_id from request :', req.body.user_id);

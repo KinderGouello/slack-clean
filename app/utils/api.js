@@ -34,6 +34,23 @@ const createClient = token => {
         })
       );
     },
+    getAccessToken: ({ clientId, clientSecret, code, redirectUri }) => {
+      const api = new WebClient();
+
+      return new Promise((resolve, reject) => api.oauth.access(
+        clientId,
+        clientSecret,
+        code,
+        redirectUri,
+        (err, authResponse) => {
+          if (err) reject(err);
+
+          console.log('user_id from slack :', authResponse.user_id);
+          console.log('token from slack :', authResponse.access_token);
+
+          resolve(authResponse);
+      }));
+    }
   }
 }
 
