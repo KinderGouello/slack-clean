@@ -1,9 +1,13 @@
+require('dotenv').config();
 const api = require('../utils/api');
 
 module.exports = async (req, res) => {
   console.log('List files');
   const client = api.createClient(JSON.parse(user).token);
-  const { files } = await client.getFiles();
+
+  const { files } = process.env.NODE_ENV === 'production'
+    ? await client.getFiles()
+    : await client.getRecentFiles();
 
   if (files.length) {
     return res.send('No file to delete');

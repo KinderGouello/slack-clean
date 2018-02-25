@@ -16,6 +16,17 @@ const createClient = token => {
       }
       ));
     },
+    getRecentFiles: () => {
+      return new Promise((resolve, reject) => client.files.list({
+        ts_from: moment().subtract(1, 'months').format('X'),
+        ts_to: moment().subtract(5, 'seconds').format('X'),
+      }, (err, filesResponse) => {
+        if (err) reject(err);
+
+        resolve(filesResponse);
+      }
+      ));
+    },
     getProfile: () => {
       new Promise((resolve, reject) => client.users.profile.get(
         { user: file.user }, (err, userProfile) => {
