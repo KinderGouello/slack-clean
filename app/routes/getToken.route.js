@@ -1,3 +1,4 @@
+require('dotenv').config();
 const api = require('../utils/api');
 const db = require('../utils/db');
 
