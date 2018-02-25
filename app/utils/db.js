@@ -20,6 +20,7 @@ const set = (key, value) => new Promise((resolve, reject) => {
   redisClient.set((key, value), (err, reply) => {
     if (err) reject(err);
 
+    console.log(`Save key ${key} to Redis with value ${value} and result :`, reply);
     resolve(reply);
   })
 });
