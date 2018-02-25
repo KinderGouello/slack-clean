@@ -7,7 +7,7 @@ const createClient = token => {
   return {
     getFiles: () => {
       return new Promise((resolve, reject) => client.files.list({
-        ts_to: moment().subtract(1, 'months').format('X'),
+        ts_from: moment().subtract(1, 'months').format('X'),
         ts_to: moment().subtract(20, 'seconds').format('X'),
       }, (err, filesResponse) => {
         if (err) reject(err);
