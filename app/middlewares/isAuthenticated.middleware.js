@@ -9,5 +9,5 @@ module.exports = async (req, res, next) => {
     return res.end('Tu n’as pas activé le cleaner, click là : https://slackstatslv.herokuapp.com/activate');
   }
 
-  next();
-}
+  return next();
+};
