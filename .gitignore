@@ -1,2 +1,5 @@
 app/node_modules/**
 app/.env
+
+# editor
+**/.vscode
