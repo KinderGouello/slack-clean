@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const state = process.env.STATE || '';
 
 module.exports = (req, res, next) => {
@@ -6,5 +7,5 @@ module.exports = (req, res, next) => {
     return res.end('This is not a Slack response');
   }
 
-  next();
-}
+  return next();
+};
