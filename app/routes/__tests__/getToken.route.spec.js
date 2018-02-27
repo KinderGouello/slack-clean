@@ -1,4 +1,3 @@
-require('dotenv').config();
 const getTokenRoute = require('../getToken.route');
 const api = require('../../utils/api');
 const db = require('../../utils/db');

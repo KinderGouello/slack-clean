@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
     ? await client.getFiles()
     : await client.getRecentFiles();
 
-  if (files.length) {
+  if (!files.length) {
     return res.send('No file to delete');
   }
 

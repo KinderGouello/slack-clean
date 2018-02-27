@@ -1,4 +1,3 @@
-require('dotenv').config();
 const activateRoute = require('../activate.route');
 const url = require('url');
 
