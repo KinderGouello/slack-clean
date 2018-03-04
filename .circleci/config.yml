@@ -17,10 +17,19 @@ jobs:
           command: cd ~/slack-clean/app && npm install
 
       - run:
-          name: test-coverage
-          command: cd ~/slack-clean/app && npm run test-coverage
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ~/slack-clean/app/cc-test-reporter
+            chmod +x ~/slack-clean/app/cc-test-reporter
 
       - save_cache:
           key: v1-dependencies-{{ checksum "~/slack-clean/app/package.json"}}
           paths:
             - ~/slack-clean/app/node_modules
+
+      - run:
+          name: test-coverage
+          command: |
+            ~/slack-clean/app/cc-test-reporter before-build
+            cd ~/slack-clean/app && npm run test-coverage
+            ~/slack-clean/app/cc-test-reporter after-build -p coverage --exit-code $?
