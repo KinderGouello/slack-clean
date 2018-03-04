@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/slack-clean
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "~/slack-clean/app/package.json"}}
+            - v1-dependencies-
+
+      - run:
+          name: install-npm
+          command: cd ~/slack-clean/app && npm install
+
+      - run:
+          name: test-coverage
+          command: cd ~/slack-clean/app && npm run test-coverage
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "~/slack-clean/app/package.json"}}
+          paths:
+            - ~/slack-clean/app/node_modules
