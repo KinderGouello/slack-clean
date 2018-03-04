@@ -1,3 +1,4 @@
+require('dotenv').config();
 const api = require('../utils/api');
 const db = require('../utils/db');
 
@@ -20,4 +21,4 @@ module.exports = async (req, res) => {
   }
 
   return res.end('Un probleme s est produit pendant la sauvegarde du token, veuillez réessayer');
-}
+};

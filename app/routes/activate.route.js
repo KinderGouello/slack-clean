@@ -1,5 +1,6 @@
 require('dotenv').config();
 const url = require('url');
+
 const clientId = process.env.SLACK_CLIENT_ID || '';
 const redirectUri = process.env.REDIRECT_URI || '';
 const state = process.env.STATE || '';
@@ -13,6 +14,6 @@ module.exports = (req, res) =>
       client_id: clientId,
       scope,
       redirect_uri: redirectUri,
-      state
-    }
+      state,
+    },
   }));
