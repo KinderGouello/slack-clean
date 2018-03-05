@@ -32,5 +32,8 @@ jobs:
           command: |
             cd ~/slack-clean/app
             ./cc-test-reporter before-build
-            npm run test-coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+            npm run test-coverage
+            cd ~/slack-clean
+            cat app/coverage/lcov.info | app/node_modules/coveralls/bin/coveralls.js
+            cd ~/slack-clean/app
             ./cc-test-reporter after-build --exit-code $?
