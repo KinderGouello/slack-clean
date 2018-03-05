@@ -30,6 +30,7 @@ jobs:
       - run:
           name: test-coverage
           command: |
-            ~/slack-clean/app/cc-test-reporter before-build
-            cd ~/slack-clean/app && npm run test-coverage
-            ~/slack-clean/app/cc-test-reporter after-build -p coverage --exit-code $?
+            cd ~/slack-clean/app
+            ./cc-test-reporter before-build
+            npm run test-coverage
+            ./cc-test-reporter after-build --exit-code $?
