@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     return res.send('No file to delete');
   }
 
-  const { profile } = await client.getProfile(req.user);
+  const { profile } = await client.getProfile(req.body.user_id);
 
   const promises = files.map(async (file) => {
     const fileResponse = await client.deleteFile(file.id);
