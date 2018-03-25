@@ -30,7 +30,7 @@ describe('/get-token', () => {
       access_token: 'user-access-token',
     }));
 
-    db.set.mockImplementation(() => false);
+    db.set.mockImplementation(() => Promise.reject(new Error('error')));
 
     await getTokenRoute({ query: { code: 'code' } }, response);
 

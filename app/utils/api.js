@@ -16,19 +16,11 @@ const createClient = (token) => {
     getRecentFiles: () => new Promise((resolve, reject) => client.files.list({
       ts_from: moment().subtract(1, 'months').format('X'),
       ts_to: moment().subtract(5, 'seconds').format('X'),
-    }, (err, filesResponse) => {
-      if (err) reject(err);
-      resolve(filesResponse);
-    })),
+    }, (err, filesResponse) => (err ? reject(err) : resolve(filesResponse)))),
 
-    getProfile: user => new Promise((resolve, reject) => {
-      client.users.profile.get({
-        user,
-      }, (err, userProfile) => {
-        if (err) reject(err);
-        resolve(userProfile);
-      });
-    }),
+    getProfile: user => new Promise((resolve, reject) => client.users.profile.get({
+      user,
+    }, (err, userProfile) => (err ? reject(err) : resolve(userProfile)))),
 
     deleteFile: id => new Promise((resolve, reject) => client.files.delete(
       id,

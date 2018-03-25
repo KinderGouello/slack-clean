@@ -24,7 +24,12 @@ describe('/delete-files', () => {
       deleteFile: () => ({ ok: true }),
     }));
 
-    await deleteFilesRoute({ user: '{ "token": "user-token" }' }, response);
+    await deleteFilesRoute({
+      user: '{ "token": "user-token" }',
+      body: {
+        user_id: 'HDOIH',
+      },
+    }, response);
 
     expect(response.send)
       // eslint-disable-next-line quotes
@@ -57,7 +62,12 @@ describe('/delete-files', () => {
       deleteFile: () => ({ ok: false }),
     }));
 
-    await deleteFilesRoute({ user: '{ "token": "user-token" }' }, response);
+    await deleteFilesRoute({
+      user: '{ "token": "user-token" }',
+      body: {
+        user_id: 'HDOIH',
+      },
+    }, response);
 
     expect(response.send)
       // eslint-disable-next-line quotes
