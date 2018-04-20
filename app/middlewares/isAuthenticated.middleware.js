@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
   req.user = await db.get(req.body.user_id);
 
   if (!req.user) {
-    return res.end('Tu n’as pas activé le cleaner, click là : https://slackstatslv.herokuapp.com/activate');
+    return res.end('Tu n’as pas activé le cleaner, click là : https://slack-clean.herokuapp.com/activate');
   }
 
   return next();
