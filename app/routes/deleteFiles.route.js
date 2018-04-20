@@ -1,6 +1,9 @@
 require('dotenv').config();
 const api = require('../utils/api');
 
+const buildTextMessages = responses =>
+  responses.reduce((lines, line) => `${lines}${line}\n`, '');
+
 module.exports = async (req, res) => {
   console.log('List files');
   const client = api.createClient(JSON.parse(req.user).token);
@@ -26,6 +29,6 @@ module.exports = async (req, res) => {
 
   return Promise
     .all(promises)
-    .then(responses => res.send(responses.reduce((lines, line) => `${files.length} fichiers trouvés.\n\n${lines}${line}\n`, '')))
+    .then(responses => res.send(`${files.length} fichiers trouvés.\n\n${buildTextMessages(responses)}`))
     .catch((err) => { throw new Error(err); });
 };
