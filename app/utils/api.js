@@ -21,9 +21,8 @@ const getAccessToken = ({
   redirectUri,
 }) => {
   const client = slack.createByApp();
-  const getToken = Promise.promisify(client.oauth.access);
 
-  return getToken(clientId, clientSecret, code, redirectUri);
+  return client.oauth.access(clientId, clientSecret, code, redirectUri);
 };
 
 module.exports = {
