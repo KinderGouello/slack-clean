@@ -22,8 +22,10 @@ module.exports = async (req, res) => {
     return `Le fichier "${file.title}", déposé par ${profile.real_name}, n’a pas pu être supprimé.`;
   });
 
+  res.charset = 'uf8';
+
   return Promise
     .all(promises)
-    .then(responses => res.send(responses.reduce((lines, line) => `${lines}${line}\n`, '')))
+    .then(responses => res.send(responses.reduce((lines, line) => `${files.length} fichiers trouvés.\n\n${lines}${line}\n`, '')))
     .catch((err) => { throw new Error(err); });
 };
