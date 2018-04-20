@@ -4,7 +4,9 @@ const createClient = (token) => {
   const client = slack.createByUser(token);
 
   return {
-    getFiles: () => client.files.list(),
+    getFiles: () => client.files.list({
+      count: 5,
+    }),
     getProfile: user => client.users.profile.get({ user }),
     deleteFile: id => client.files.delete(id),
   };
