@@ -20,7 +20,6 @@ describe('/delete-files', () => {
           },
         ],
       }),
-      getProfile: () => ({ profile: { real_name: 'Bobby' } }),
       deleteFile: () => ({ ok: true }),
     }));
 
@@ -33,7 +32,7 @@ describe('/delete-files', () => {
 
     expect(response.send)
       // eslint-disable-next-line quotes
-      .toHaveBeenCalledWith("Fichier \"File 1\", déposé par Bobby, a été supprimé.\nFichier \"File 2\", déposé par Bobby, a été supprimé.\n");
+      .toHaveBeenCalledWith("2 fichiers trouvés.\n\nLe fichier \"File 1\" a été supprimé.\nLe fichier \"File 2\" a été supprimé.\n");
   });
 
   it('should have no files to delete', async () => {
@@ -43,9 +42,14 @@ describe('/delete-files', () => {
       getFiles: () => ({ files: [] }),
     }));
 
-    await deleteFilesRoute({ user: '{ "token": "user-token" }' }, response);
+    await deleteFilesRoute({
+      user: '{ "token": "user-token" }',
+      body: {
+        user_id: 'HDOIH',
+      },
+    }, response);
 
-    expect(response.send).toHaveBeenCalledWith('No file to delete');
+    expect(response.send).toHaveBeenCalledWith('Aucun fichier à supprimer');
   });
 
   it('should have error when delete file', async () => {
@@ -58,7 +62,6 @@ describe('/delete-files', () => {
           title: 'File 1',
         }],
       }),
-      getProfile: () => ({ profile: { real_name: 'Bobby' } }),
       deleteFile: () => ({ ok: false }),
     }));
 
@@ -71,6 +74,6 @@ describe('/delete-files', () => {
 
     expect(response.send)
       // eslint-disable-next-line quotes
-      .toHaveBeenCalledWith("Le fichier \"File 1\", déposé par Bobby, n’a pas pu être supprimé.\n");
+      .toHaveBeenCalledWith("1 fichiers trouvés.\n\nLe fichier \"File 1\" n’a pas pu être supprimé.\n");
   });
 });

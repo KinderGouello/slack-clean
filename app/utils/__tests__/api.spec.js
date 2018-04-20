@@ -1,20 +1,13 @@
-const { promisify } = require('util');
 const slack = require('../slack-api-proxy');
 const api = require('../api');
 
 jest.spyOn(Date, 'now').mockImplementation(() => 1487076708000);
-jest.mock('util');
 jest.mock('../slack-api-proxy');
 
 const slackUserClient = {
   files: {
     list: jest.fn(),
     delete: jest.fn(),
-  },
-  users: {
-    profile: {
-      get: jest.fn(),
-    },
   },
 };
 const slackAppClient = {
@@ -31,51 +24,36 @@ describe('api createClient', () => {
     const apiClient = api.createClient();
 
     expect(apiClient).toHaveProperty('getFiles');
-    expect(apiClient).toHaveProperty('getProfile');
     expect(apiClient).toHaveProperty('deleteFile');
-
-    expect(promisify).toHaveBeenCalledWith(slackUserClient.files.list);
-    expect(promisify).toHaveBeenCalledWith(slackUserClient.users.profile.get);
-    expect(promisify).toHaveBeenCalledWith(slackUserClient.files.delete);
   });
 });
 
 describe('api getFiles', () => {
   it('should return files', async () => {
-    const getFiles = jest.fn().mockImplementation(() => ['file1', 'file2']);
-    promisify.mockImplementation(() => getFiles);
+    slackUserClient.files.list.mockImplementation(() => ['file1', 'file2']);
 
-    const files = await api.createClient().getFiles();
+    const files = await api.createClient().getFiles('user01');
 
     expect.assertions(2);
     expect(files).toEqual(['file1', 'file2']);
-    expect(getFiles).toHaveBeenCalledWith({ ts_from: '1484398308', ts_to: '1487076688' });
-  });
-});
-
-describe('api getProfile', () => {
-  it('should return user profile', async () => {
-    const getProfile = jest.fn().mockImplementation(() => ({ name: ' John' }));
-    promisify.mockImplementation(() => getProfile);
-
-    const profile = await api.createClient().getProfile('624372684');
-
-    expect.assertions(2);
-    expect(profile).toEqual({ name: ' John' });
-    expect(getProfile).toHaveBeenCalledWith({ user: '624372684' });
+    expect(slackUserClient.files.list).toHaveBeenCalledWith({
+      count: 30,
+      user: 'user01',
+      ts_to: '1484398308',
+      types: 'images',
+    });
   });
 });
 
 describe('api deleteFile', () => {
   it('should delete file', async () => {
-    const deleteFile = jest.fn().mockImplementation(() => 'ok');
-    promisify.mockImplementation(() => deleteFile);
+    slackUserClient.files.delete.mockImplementation(() => 'ok');
 
     const response = await api.createClient().deleteFile('624372684');
 
     expect.assertions(2);
     expect(response).toEqual('ok');
-    expect(deleteFile).toHaveBeenCalledWith('624372684');
+    expect(slackUserClient.files.delete).toHaveBeenCalledWith('624372684');
   });
 });
 
@@ -87,15 +65,13 @@ describe('api getAccessToken', () => {
       code: 'code',
       redirectUri: 'http://redirect',
     };
-    const getToken = jest.fn().mockImplementation(() => 'token');
-    promisify.mockImplementation(() => getToken);
+    slackAppClient.oauth.access.mockImplementation(() => 'token');
 
     const accessToken = await api.getAccessToken(params);
 
-    expect.assertions(3);
+    expect.assertions(2);
     expect(accessToken).toEqual('token');
-    expect(promisify).toHaveBeenCalledWith(slackAppClient.oauth.access);
-    expect(getToken).toHaveBeenCalledWith(
+    expect(slackAppClient.oauth.access).toHaveBeenCalledWith(
       params.clientId,
       params.clientSecret,
       params.code,

@@ -11,18 +11,16 @@ module.exports = async (req, res) => {
   const { files } = await client.getFiles(req.body.user_id);
 
   if (!files.length) {
-    return res.send('No file to delete');
+    return res.send('Aucun fichier à supprimer');
   }
-
-  const { profile } = await client.getProfile(req.body.user_id);
 
   const promises = files.map(async (file) => {
     const fileResponse = await client.deleteFile(file.id);
 
     if (fileResponse.ok) {
-      return `Fichier "${file.title}", déposé par ${profile.real_name}, a été supprimé.`;
+      return `Le fichier "${file.title}" a été supprimé.`;
     }
-    return `Le fichier "${file.title}", déposé par ${profile.real_name}, n’a pas pu être supprimé.`;
+    return `Le fichier "${file.title}" n’a pas pu être supprimé.`;
   });
 
   res.charset = 'uf8';
