@@ -1,11 +1,16 @@
 const slack = require('./slack-api-proxy');
+const moment = require('moment');
 
 const createClient = (token) => {
   const client = slack.createByUser(token);
 
   return {
-    getFiles: () => client.files.list(),
-    getProfile: user => client.users.profile.get({ user }),
+    getFiles: user => client.files.list({
+      count: 30,
+      user,
+      ts_to: moment().subtract(1, 'months').format('X'),
+      types: 'images',
+    }),
     deleteFile: id => client.files.delete(id),
   };
 };

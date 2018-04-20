@@ -16,9 +16,12 @@ module.exports = async (req, res) => {
     });
 
     await db.set(userId, JSON.stringify({ token: accessToken }));
+
+    res.charset = 'utf8';
     return res.end('Ok merci, c’est super cool ! Tu peux maintenant lancer ta commande sur Slack et nettoyer tous tes fichiers');
   } catch (error) {
     console.log('save error :', error);
+    res.charset = 'utf8';
     return res.end('Un probleme s est produit pendant la sauvegarde du token, veuillez réessayer');
   }
 };
