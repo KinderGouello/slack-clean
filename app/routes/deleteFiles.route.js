@@ -5,9 +5,7 @@ module.exports = async (req, res) => {
   console.log('List files');
   const client = api.createClient(JSON.parse(req.user).token);
 
-  const { files } = await client.getFiles();
-  console.log(files);
-
+  const { files } = await client.getFiles(req.body.user_id);
 
   if (!files.length) {
     return res.send('No file to delete');
