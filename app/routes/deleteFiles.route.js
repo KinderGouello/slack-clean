@@ -5,9 +5,7 @@ module.exports = async (req, res) => {
   console.log('List files');
   const client = api.createClient(JSON.parse(req.user).token);
 
-  const { files } = process.env.NODE_ENV === 'production'
-    ? await client.getFiles()
-    : await client.getRecentFiles();
+  const { files } = await client.getFiles();
 
   if (!files.length) {
     return res.send('No file to delete');

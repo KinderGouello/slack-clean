@@ -8,7 +8,7 @@ describe('/delete-files', () => {
     const response = { send: jest.fn() };
 
     api.createClient.mockImplementation(() => ({
-      getRecentFiles: () => ({
+      getFiles: () => ({
         files: [
           {
             id: 1,
@@ -40,7 +40,7 @@ describe('/delete-files', () => {
     const response = { send: jest.fn() };
 
     api.createClient.mockImplementation(() => ({
-      getRecentFiles: () => ({ files: [] }),
+      getFiles: () => ({ files: [] }),
     }));
 
     await deleteFilesRoute({ user: '{ "token": "user-token" }' }, response);
@@ -52,7 +52,7 @@ describe('/delete-files', () => {
     const response = { send: jest.fn() };
 
     api.createClient.mockImplementation(() => ({
-      getRecentFiles: () => ({
+      getFiles: () => ({
         files: [{
           id: 1,
           title: 'File 1',
