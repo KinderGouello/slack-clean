@@ -11,7 +11,6 @@ const createClient = (token) => {
       ts_to: moment().subtract(1, 'months').format('X'),
       types: 'images',
     }),
-    getProfile: user => client.users.profile.get({ user }),
     deleteFile: id => client.files.delete(id),
   };
 };

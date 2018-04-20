@@ -9,11 +9,6 @@ const slackUserClient = {
     list: jest.fn(),
     delete: jest.fn(),
   },
-  users: {
-    profile: {
-      get: jest.fn(),
-    },
-  },
 };
 const slackAppClient = {
   oauth: {
@@ -29,7 +24,6 @@ describe('api createClient', () => {
     const apiClient = api.createClient();
 
     expect(apiClient).toHaveProperty('getFiles');
-    expect(apiClient).toHaveProperty('getProfile');
     expect(apiClient).toHaveProperty('deleteFile');
   });
 });
@@ -48,18 +42,6 @@ describe('api getFiles', () => {
       ts_to: '1484398308',
       types: 'images',
     });
-  });
-});
-
-describe('api getProfile', () => {
-  it('should return user profile', async () => {
-    slackUserClient.users.profile.get.mockImplementation(() => ({ name: ' John' }));
-
-    const profile = await api.createClient().getProfile('624372684');
-
-    expect.assertions(2);
-    expect(profile).toEqual({ name: ' John' });
-    expect(slackUserClient.users.profile.get).toHaveBeenCalledWith({ user: '624372684' });
   });
 });
 
