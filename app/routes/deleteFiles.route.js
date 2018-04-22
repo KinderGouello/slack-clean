@@ -1,32 +1,23 @@
-require('dotenv').config();
-const api = require('../utils/api');
-
-const buildTextMessages = responses =>
-  responses.reduce((lines, line) => `${lines}${line}\n`, '');
+const db = require('../utils/db');
+const deleteFiles = require('../tasks/deleteFiles');
 
 module.exports = async (req, res) => {
-  console.log('List files');
-  const client = api.createClient(JSON.parse(req.user).token);
+  if (req.payload.actions[0].value === '') {
+    await db.del(req.payload.callback_id);
 
-  const { files } = await client.getFiles(req.body.user_id);
-
-  if (!files.length) {
-    return res.send('Aucun fichier à supprimer');
+    return res.send({
+      delete_original: true,
+    });
   }
 
-  const promises = files.map(async (file) => {
-    const fileResponse = await client.deleteFile(file.id);
+  deleteFiles(req.payload);
 
-    if (fileResponse.ok) {
-      return `Le fichier "${file.title}" a été supprimé.`;
-    }
-    return `Le fichier "${file.title}" n’a pas pu être supprimé.`;
+  return res.send({
+    attachments: [
+      {
+        text: 'Processing...',
+        color: '#e9a820',
+      },
+    ],
   });
-
-  res.charset = 'uf8';
-
-  return Promise
-    .all(promises)
-    .then(responses => res.send(`${files.length} fichiers trouvés.\n\n${buildTextMessages(responses)}`))
-    .catch((err) => { throw new Error(err); });
 };
