@@ -9,24 +9,24 @@ const getClient = () =>
 
 const get = (key) => {
   const client = getClient();
-  const getAsync = promisify(client.get).bind(client);
+  client.getAsync = promisify(client.get);
 
-  return getAsync(key);
+  return client.getAsync(key);
 };
 
 const set = (key, value) => {
   const client = getClient();
-  const setAsync = promisify(client.set).bind(client);
+  client.setAsync = promisify(client.set);
 
-  return setAsync(key, value)
+  return client.setAsync(key, value)
     .then(res => console.log(`Save ${key} with value ${value} and result :`, res));
 };
 
 const del = (key) => {
   const client = getClient();
-  const delAsync = promisify(client.del).bind(client);
+  client.delAsync = promisify(client.del);
 
-  return delAsync(key)
+  return client.delAsync(key)
     .then(res => console.log(`Delete ${key} and result :`, res));
 };
 

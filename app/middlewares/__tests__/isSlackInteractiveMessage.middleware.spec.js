@@ -4,7 +4,7 @@ const isSlackInteractiveMessage = require('../isSlackInteractiveMessage.middlewa
 const slackVerificationToken = process.env.SLACK_VERIFICATION_TOKEN || '';
 
 describe('POST Query not by Slack', () => {
-  it('should return a message', async () => {
+  it('should return a message', () => {
     const response = { end: jest.fn() };
 
     isSlackInteractiveMessage({ body: {} }, response);
@@ -13,16 +13,30 @@ describe('POST Query not by Slack', () => {
   });
 });
 
-describe('User exist in database', () => {
-  it('should continue', async () => {
+describe('POST Query not allowed', () => {
+  it('should return a message', () => {
+    const response = { end: jest.fn() };
+
+    isSlackInteractiveMessage({
+      body: {
+        payload: '{ "token": "dsfdklfjkdshklfj" }',
+      },
+    }, response);
+
+    expect(response.end).toHaveBeenCalled();
+  });
+});
+
+describe('POST Query ok', () => {
+  it('should continue', () => {
     const next = jest.fn();
-    const req = { body: { user_id: 'USER_ID' } };
 
-    db.get.mockImplementation(() => 'user');
+    isSlackInteractiveMessage({
+      body: {
+        payload: `{ "token": "${slackVerificationToken}" }`,
+      },
+    }, {}, next);
 
-    await isAuthenticatedMiddleware(req, {}, next);
-
-    expect(req.user).toEqual('user');
     expect(next).toHaveBeenCalled();
   });
 });

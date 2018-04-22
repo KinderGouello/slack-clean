@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   return res.send({
     attachments: [
       {
-        text: 'Processing...',
+        text: 'Traitement en cours...',
         color: '#e9a820',
       },
     ],
