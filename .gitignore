@@ -3,3 +3,5 @@ app/.env
 
 # editor
 **/.vscode
+
+ngrok
