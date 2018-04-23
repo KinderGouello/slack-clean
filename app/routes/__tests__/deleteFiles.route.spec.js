@@ -1,79 +1,48 @@
 const deleteFilesRoute = require('../deleteFiles.route');
-const api = require('../../utils/api');
+const deleteFiles = require('../../tasks/deleteFiles');
+const db = require('../../utils/db');
 
-jest.mock('../../utils/api');
+jest.mock('../../tasks/deleteFiles');
+jest.mock('../../utils/db');
 
 describe('/delete-files', () => {
-  it('should delete slack files', async () => {
+  it('should execute files deletion', async () => {
     const response = { send: jest.fn() };
-
-    api.createClient.mockImplementation(() => ({
-      getFiles: () => ({
-        files: [
-          {
-            id: 1,
-            title: 'File 1',
-          },
-          {
-            id: 2,
-            title: 'File 2',
-          },
-        ],
-      }),
-      deleteFile: () => ({ ok: true }),
-    }));
 
     await deleteFilesRoute({
-      user: '{ "token": "user-token" }',
-      body: {
-        user_id: 'HDOIH',
-      },
-    }, response);
-
-    expect(response.send)
-      // eslint-disable-next-line quotes
-      .toHaveBeenCalledWith("2 fichiers trouvés.\n\nLe fichier \"File 1\" a été supprimé.\nLe fichier \"File 2\" a été supprimé.\n");
-  });
-
-  it('should have no files to delete', async () => {
-    const response = { send: jest.fn() };
-
-    api.createClient.mockImplementation(() => ({
-      getFiles: () => ({ files: [] }),
-    }));
-
-    await deleteFilesRoute({
-      user: '{ "token": "user-token" }',
-      body: {
-        user_id: 'HDOIH',
-      },
-    }, response);
-
-    expect(response.send).toHaveBeenCalledWith('Aucun fichier à supprimer');
-  });
-
-  it('should have error when delete file', async () => {
-    const response = { send: jest.fn() };
-
-    api.createClient.mockImplementation(() => ({
-      getFiles: () => ({
-        files: [{
-          id: 1,
-          title: 'File 1',
+      payload: {
+        actions: [{
+          value: '',
         }],
-      }),
-      deleteFile: () => ({ ok: false }),
-    }));
-
-    await deleteFilesRoute({
-      user: '{ "token": "user-token" }',
-      body: {
-        user_id: 'HDOIH',
+        callback_id: 'delete',
       },
     }, response);
 
-    expect(response.send)
-      // eslint-disable-next-line quotes
-      .toHaveBeenCalledWith("1 fichiers trouvés.\n\nLe fichier \"File 1\" n’a pas pu être supprimé.\n");
+    expect(db.del).toHaveBeenCalledWith('delete');
+    expect(response.send).toHaveBeenCalledWith({ delete_original: true });
+  });
+
+  it('should cancel process', async () => {
+    const req = {
+      payload: {
+        actions: [{
+          value: '1',
+        }],
+        callback_id: 'delete',
+      },
+    };
+    const response = { send: jest.fn() };
+
+    await deleteFilesRoute(req, response);
+
+    expect(deleteFiles).toHaveBeenCalledWith(req.payload);
+    expect(response.send).toHaveBeenCalledWith({
+      attachments: [
+        {
+          text: 'Traitement en cours...',
+          color: '#e9a820',
+        },
+      ],
+    });
   });
 });
