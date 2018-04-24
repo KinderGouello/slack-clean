@@ -1,8 +1,15 @@
+require('dotenv').config();
 const slack = require('../slack-api-proxy');
 const api = require('../api');
 
+const env = Object.assign({}, process.env);
+
 jest.spyOn(Date, 'now').mockImplementation(() => 1487076708000);
 jest.mock('../slack-api-proxy');
+
+afterEach(() => {
+  process.env = env;
+});
 
 const slackUserClient = {
   files: {
@@ -30,6 +37,7 @@ describe('api createClient', () => {
 
 describe('api getFiles', () => {
   it('should return files', async () => {
+    process.env.NODE_ENV = 'production';
     slackUserClient.files.list.mockImplementation(() => ['file1', 'file2']);
 
     const files = await api.createClient().getFiles('user01');
