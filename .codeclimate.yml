@@ -1,0 +1,7 @@
+version: "2"
+plugins:
+  eslint:
+    enabled: true
+exclude_patterns:
+- "**/node_modules/"
+- "**/__tests__/"
