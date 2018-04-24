@@ -1,3 +1,4 @@
+require('dotenv').config();
 const slack = require('./slack-api-proxy');
 const moment = require('moment');
 
@@ -5,12 +6,14 @@ const createClient = (token) => {
   const client = slack.createByUser(token);
 
   return {
-    getFiles: user => client.files.list({
-      count: 30,
-      user,
-      ts_to: moment().subtract(1, 'months').format('X'),
-      types: 'images',
-    }),
+    getFiles: user => client.files.list(Object.assign(
+      {
+        count: 30,
+        user,
+        types: 'images',
+      },
+      (process.env.NODE_ENV === 'production') ? { ts_to: moment().subtract(1, 'months').format('X') } : {},
+    )),
     deleteFile: id => client.files.delete(id),
   };
 };
